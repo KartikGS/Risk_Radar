@@ -1,7 +1,6 @@
 'use server'
 
-export async function query(data:string) {
-    console.log(process.env.HF_token);
+export async function query(data:{ inputs: string; }) {
     const response = await fetch(
         "https://api-inference.huggingface.co/models/KartikGPT/Gemma-2b-finetune",
         {

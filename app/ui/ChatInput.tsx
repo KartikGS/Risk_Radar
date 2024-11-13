@@ -1,26 +1,21 @@
 'use client'
+
 import { FormEvent } from "react";
-import { query } from "../../lib/actions";
-import Textarea from 'next';
+import { query } from "../lib/actions";
+import { useState } from "react";
 
 export default function ChatInput() {
 
+    const [response, setResponse] = useState("Model Response ...");
+
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-        console.log(event.currentTarget);
+        event.preventDefault();
      
-        const formData = new FormData(event.currentTarget)
-        for (let [key, value] of formData.entries()) {
-          console.log(`${key}: ${value}`);
-          if(key === 'chat') {
-            const data:any = {
-              inputs: `Quote: ${value}`,
-            };
-            const response = await query(data);
-            console.log(response);
-            document.getElementById('response')!.innerText = response[0].generated_text;
-          }
-        }
+        const formData = new FormData(event.currentTarget)    
+        const response = await query({inputs: `Quote: ${formData.get('chat')}`});
+        
+        console.log(JSON.stringify(response))
+        setResponse(!response.error?response[0].generated_text:response.error);
     }
 
     return (
@@ -51,7 +46,7 @@ export default function ChatInput() {
                     </button>
                 </div>
             </form>
-            <textarea name="response" id="response" cols={30} rows={10} className="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" disabled placeholder="Model response..."></textarea>
+            <div className="p-2.5 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" >{response}</div>
         </div>
     )
 }
