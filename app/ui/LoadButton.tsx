@@ -4,13 +4,19 @@ import Image from "next/image";
 import { query } from "../lib/actions";
 import { useState } from "react";
 
-export default function LoadButton() {
-  const [disabled, setDisabled] = useState(false);
+export default function LoadButton(
+  {setModelState,setTimer}:
+  {setModelState:React.Dispatch<React.SetStateAction<string>>,
+  setTimer:React.Dispatch<React.SetStateAction<number>>}) {
+  
+    const [disabled, setDisabled] = useState(false);
 
   async function loadModel() {
     const response = await query({ inputs: "" });
     console.log(response);
     setDisabled(true);
+    setModelState('Loading');
+    setTimer(response[0].time);
   }
 
   return (
