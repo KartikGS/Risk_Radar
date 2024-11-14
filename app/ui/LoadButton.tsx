@@ -5,18 +5,38 @@ import { query } from "../lib/actions";
 import { useState } from "react";
 
 export default function LoadButton(
-  {setModelState,setTimer}:
-  {setModelState:React.Dispatch<React.SetStateAction<string>>,
-  setTimer:React.Dispatch<React.SetStateAction<number>>}) {
+  {modelState,setModelState,setTimer}:
+  {modelState: string,
+  setModelState:React.Dispatch<React.SetStateAction<string>>,
+  setTimer:React.Dispatch<React.SetStateAction<number>>
+}) {
   
     const [disabled, setDisabled] = useState(false);
 
   async function loadModel() {
-    const response = await query({ inputs: "" });
-    console.log(response);
-    setDisabled(true);
-    setModelState('Loading');
-    setTimer(response[0].time);
+    if (modelState==='Not Loaded'){
+      const response = await query({ inputs: "" });
+      console.log(response);
+      if('estimated_time' in response){
+        setDisabled(true);
+        setTimeout(() => {
+          setDisabled(false);
+          setModelState('Loaded')
+        }, response.estimated_time*1000);
+        setModelState('Loading');
+        setTimer(response.estimated_time);
+      }
+      else if('error_type' in response){
+        console.log('Model already loaded');
+        setModelState('Loaded') 
+      }
+      else if ('error' in response){
+        console.log('error occured try again')
+      }
+    }
+    else{
+      console.log('Model already loaded')
+    }
   }
 
   return (

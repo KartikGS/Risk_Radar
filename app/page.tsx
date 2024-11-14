@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center gap-32 p-8">
       <header>
-        <div className="text-6xl">Risk-Radar</div>
+        <div className="text-6xl">Topic</div>
       </header>
       <main className="w-full flex flex-col items-center gap-24">
         <div className="flex gap-16">
@@ -29,10 +29,7 @@ export default function Home() {
             <li>Save and see your changes instantly.</li>
           </ol>
         </div>
-
-        <div className="w-1/2 flex flex-col justify-items-center gap-12">
-          <InteractLLM />
-        </div>
+        <InteractLLM />
       </main>
       <footer className="flex gap-6 flex-wrap items-center">
         <a
