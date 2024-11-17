@@ -4,7 +4,7 @@ import InteractLLM from "./ui/InteractLLM";
 export default function Home() {
 
   return (
-    <div className="flex flex-col items-center gap-32 p-8">
+    <div className="h-full flex flex-col justify-between items-center gap-32 p-12">
       <header>
         <div className="text-6xl">Topic</div>
       </header>
