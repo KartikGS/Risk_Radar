@@ -1,7 +1,7 @@
 'use client'
 
-import { FormEvent, useState, useRef } from "react";
-import { generateText } from "../lib/actions";
+import { FormEvent, useState, useRef, useEffect } from "react";
+import { generate } from "@/lib/llm/generateClient";
 
 const sampleInputs = [
     "Before we proceed any further, hear me speak.",
@@ -14,13 +14,37 @@ const sampleInputs = [
     "No more talking on't; let it be done: away, away!"
 ];
 
+interface ModelMeta {
+    stoi: Record<string, number>;
+    itos: Record<string, string>;
+    block_size: number;
+}
+
 export default function BaseLLMChat() {
     const [response, setResponse] = useState("Model Response ...");
     const [isLoading, setIsLoading] = useState(false);
+    const [meta, setMeta] = useState<ModelMeta | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        // Load meta.json on client side
+        fetch('/lib/tokenizer/meta.json')
+            .then(res => res.json())
+            .then(data => setMeta(data))
+            .catch(err => {
+                console.error('Failed to load meta.json:', err);
+                setResponse("Error loading model metadata");
+            });
+    }, []);
 
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
+        if (!meta) {
+            setResponse("Model metadata not loaded yet...");
+            return;
+        }
+
         setIsLoading(true);
 
         const formData = new FormData(event.currentTarget);
@@ -31,9 +55,19 @@ export default function BaseLLMChat() {
             return;
         }
 
-        const result = await generateText(inputText);
-        setResponse(result || "Error generating text");
-        setIsLoading(false);
+        try {
+            const result = await generate({
+                meta,
+                prompt: inputText,
+                maxNewTokens: 200,
+            });
+            setResponse(result || "Error generating text");
+        } catch (error) {
+            console.error('Generation error:', error);
+            setResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     function sampleInput(sample: string) {
@@ -78,11 +112,11 @@ export default function BaseLLMChat() {
                             rows={1}
                             className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             placeholder="Your message..."
-                            disabled={isLoading}
+                            disabled={isLoading || !meta}
                         ></textarea>
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || !meta}
                             className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">

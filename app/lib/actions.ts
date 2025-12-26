@@ -1,31 +1,7 @@
 "use server";
 
-import fs from "fs";
-import path from "path";
-import { getSession } from "@/lib/llm/loadModel";
-import { generate } from "@/lib/llm/generate";
-
-const meta = JSON.parse(
-  fs.readFileSync(
-    path.join(process.cwd(), "lib/tokenizer/meta.json"),
-    "utf8"
-  )
-);
-
-export async function generateText(prompt: string) {
-  if (!prompt || typeof prompt !== "string") {
-    return "Invalid prompt";
-  }
-
-  const session = await getSession();
-
-  return await generate({
-    session,
-    meta,
-    prompt,
-    maxNewTokens: 500,
-  });
-}
+// Note: generateText has been moved to client-side inference using onnxruntime-web
+// See lib/llm/generateClient.ts for the client-side implementation
 
 export async function query(data: { inputs: string; }) {
   try {
