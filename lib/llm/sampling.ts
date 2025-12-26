@@ -6,7 +6,7 @@ function softmax(logits: Float32Array | number[]) {
 }
 
 function sampleMultinomial(probs: number[]) {
-  let r = Math.random();
+  const r = Math.random();
   let cum = 0;
   for (let i = 0; i < probs.length; i++) {
     cum += probs[i];

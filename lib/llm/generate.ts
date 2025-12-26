@@ -1,6 +1,12 @@
 import * as ort from "onnxruntime-node";
 import { softmax, sampleMultinomial } from "./sampling";
 
+interface ModelMeta {
+  stoi: Record<string, number>;
+  itos: Record<string, string>;
+  block_size: number;
+}
+
 export async function generate({
   session,
   meta,
@@ -8,7 +14,7 @@ export async function generate({
   maxNewTokens = 200,
 }: {
   session: ort.InferenceSession;
-  meta: any;
+  meta: ModelMeta;
   prompt: string;
   maxNewTokens: number;
 }) {

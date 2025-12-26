@@ -36,7 +36,7 @@ export default function BaseLLMChat() {
         setIsLoading(false);
     }
 
-    function useSampleInput(sample: string) {
+    function sampleInput(sample: string) {
         if (textareaRef.current) {
             textareaRef.current.value = sample;
             textareaRef.current.focus();
@@ -56,7 +56,7 @@ export default function BaseLLMChat() {
                             <button
                                 key={index}
                                 type="button"
-                                onClick={() => useSampleInput(sample)}
+                                onClick={() => sampleInput(sample)}
                                 disabled={isLoading}
                                 className="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
