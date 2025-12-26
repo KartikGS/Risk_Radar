@@ -2,6 +2,9 @@
   "name": "LLM-Journey",
   "version": "0.1.0",
   "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": ["onnxruntime-node"]
+  },
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
