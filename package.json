@@ -1,5 +1,5 @@
 {
-  "name": "risk-radar",
+  "name": "LLM-Journey",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "next": "15.5.7",
+    "onnxruntime-node": "^1.23.2",
     "react": "19.0.1",
     "react-dom": "19.0.1"
   },
