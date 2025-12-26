@@ -1,5 +1,5 @@
-import * as ort from "onnxruntime-web";
 import { softmax, sampleMultinomial } from "./sampling";
+import type * as OrtType from "onnxruntime-web";
 
 interface ModelMeta {
   stoi: Record<string, number>;
@@ -7,11 +7,20 @@ interface ModelMeta {
   block_size: number;
 }
 
-let session: ort.InferenceSession | null = null;
+let session: OrtType.InferenceSession | null = null;
+let ort: typeof OrtType | null = null;
 
-async function getSession() {
+async function getOrt(): Promise<typeof OrtType> {
+  if (!ort) {
+    ort = await import("onnxruntime-web");
+  }
+  return ort;
+}
+
+async function getSession(): Promise<OrtType.InferenceSession> {
   if (!session) {
-    session = await ort.InferenceSession.create(
+    const ortModule = await getOrt();
+    session = await ortModule.InferenceSession.create(
       "/models/bigram.onnx",
       { executionProviders: ["wasm"] }
     );
@@ -44,7 +53,8 @@ export async function generate({
         : idx;
 
     // ONNX expects int64 - use BigInt64Array for web
-    const inputTensor = new ort.Tensor(
+    const ortModule = await getOrt();
+    const inputTensor = new ortModule.Tensor(
       "int64",
       new BigInt64Array(idxCond.map(BigInt)),
       [1, idxCond.length]
